@@ -30,7 +30,7 @@ public class Histogram {
     }
 
     public void record(Double value) {
-        if (value > max.doubleValue() || value < min.doubleValue()) {
+        if (value >= max.doubleValue() || value < min.doubleValue()) {
             log.warn("Ignoring value {}. Out of range", value);
             return;
         }
@@ -38,7 +38,7 @@ public class Histogram {
     }
 
     private int bin(double value) {
-        return (int) Math.floor(counts.length * Math.abs(value / delta.doubleValue()));
+        return (int) Math.floor(counts.length * (value - min.doubleValue()) / this.delta.doubleValue());
     }
 
     @JsonValue
