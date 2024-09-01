@@ -1,0 +1,16 @@
+svg {
+  width: 100%;
+}
+
+#app {
+  margin: 0px 1%;
+}
+
+#histograms {
+  display: flex;
+  justify-content: space-between;
+}
+
+#histograms > div {
+  flex: 1;
+}
