@@ -34,7 +34,7 @@ public class AveragesProducer {
         log.info("Configuring a stream for sample averaging. Depth = {}, SampleSize = {}", levelDepth, sampleSize);
 
         // Averaging level = 0 == no averaging
-        result.to(averagesTopic.name(), Produced.streamPartitioner(fixedPartition(0)));
+        result.to(averagesTopic.name(), fixedPartition(0));
 
         for (var partition = 1; partition < levelDepth; partition++) {
             log.trace("Configuring stream topology for partition {}", partition);
@@ -47,14 +47,14 @@ public class AveragesProducer {
                 .mapValues((_, v) -> DoubleStream.of(v).average().orElseThrow())
                 .peek((_, v) -> log.debug("Level = {}. Average = {}", level, v));
 
-            result.to(averagesTopic.name(), Produced.streamPartitioner(fixedPartition(partition)));
+            result.to(averagesTopic.name(), fixedPartition(partition));
         }
 
         return result;
     }
 
-    private StreamPartitioner<UUID, Double> fixedPartition(int partition) {
-        return (_, _, _, _) -> partition;
+    private Produced<UUID, Double> fixedPartition(int partition) {
+        return Produced.streamPartitioner((_, _, _, _) -> partition);
     }
 
     private static class DoubleAggregator implements Processor<UUID, Double, UUID, double[]> {

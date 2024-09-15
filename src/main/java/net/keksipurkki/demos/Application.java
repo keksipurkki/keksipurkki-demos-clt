@@ -43,17 +43,13 @@ public class Application {
         var level = average.partition();
 
         log.info("Received an average. AveragingLevel = {}, Value = {}", level, average.value());
-        var histogram = histograms.computeIfAbsent(level, this::newHistogram);
+        var histogram = histograms.computeIfAbsent(level, Histogram::newHistogram);
 
         log.debug("Recording value to histogram {}", histogram.name());
         histogram.record(average.value());
 
         log.debug("Broadcast to {}", topic);
-        template.convertAndSend(topic, new HistogramMessage(histograms.values()));
-    }
-
-    private Histogram newHistogram(int level) {
-        return new Histogram(level, 10, 0.0d, 1.0d);
+        template.convertAndSend(topic, HistogramMessage.from(histograms.values()));
     }
 
 }

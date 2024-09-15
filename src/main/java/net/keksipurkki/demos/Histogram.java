@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static java.math.RoundingMode.HALF_DOWN;
@@ -41,27 +42,27 @@ public class Histogram {
         return (int) Math.floor(counts.length * (value - min.doubleValue()) / this.delta.doubleValue());
     }
 
-    @JsonValue
-    List<Bin> getHistogram() {
-        var bins = new ArrayList<Bin>();
-
-        var binWidth = new BigDecimal(this.delta.doubleValue() / counts.length);
-
-        for (var i = 0; i < counts.length; i++) {
-            var offset = new BigDecimal(i * binWidth.doubleValue());
-            var binMin = min.add(offset);
-            var binMax = binMin.add(binWidth);
-            bins.add(new Bin(binMin, binMax, counts[i]));
-        }
-
-        return bins;
-    }
-
     public String name() {
         return "Histogram #%d".formatted(id);
     }
 
-    record Bin(BigDecimal min, BigDecimal max, int count) {
+    public static Histogram newHistogram(int level) {
+        return new Histogram(level, 10, 0.0d, 1.0d);
     }
 
+    public Number delta() {
+        return delta;
+    }
+
+    public int[] counts() {
+        return counts;
+    }
+
+    public BigDecimal min() {
+        return min;
+    }
+
+    public BigDecimal max() {
+        return max;
+    }
 }

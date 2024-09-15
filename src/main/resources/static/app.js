@@ -59,6 +59,7 @@ const client = new Client({
 
       client.subscribe('/topic/histograms', message => {
         const { histograms } = JSON.parse(message.body);
+        console.log(histograms);
         d3.selectAll("svg > *").remove();
         histograms.forEach((histogram, level) => {
           console.log(`Updating histogram at level ${level + 1}`);
